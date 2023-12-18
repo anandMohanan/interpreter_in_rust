@@ -1,24 +1,46 @@
-pub enum Node {
-    TokenLiteral(String),
+use crate::lexer::token::Token;
+
+pub trait Node {
+    fn token_literal(&self) -> Token;
 }
 
-pub enum Statement {
-    Node,
-    StatementNode,
+pub trait Statement: Node {
+    fn statement_node(&self);
 }
-pub enum Expression {
-    Node,
-    ExpressionNode,
+pub trait Expression: Node {
+    fn expression_node(&self);
 }
 
 pub struct Program {
-    statements: Vec<Statement>,
+    pub statements: Vec<Box<dyn Statement>>,
 }
 
-impl Program {
-    fn token_literal(&mut self) -> &str {
-        if self.statements.len() > 0 {
-            self.statements[0]
-        }
+pub struct Identifier<'a> {
+    value: &'a str,
+    token: Token,
+}
+
+impl Node for Identifier<'_> {
+    fn token_literal(&self) -> Token {
+        self.token.clone()
     }
+}
+
+impl Statement for Identifier<'_> {
+    fn statement_node(&self) {}
+}
+pub struct Let<'a> {
+    token: Token,
+    value: Box<dyn Expression>,
+    name: Box<Identifier<'a>>,
+}
+
+impl Node for Let<'_> {
+    fn token_literal(&self) -> Token {
+        self.token.clone()
+    }
+}
+
+impl Statement for Let<'_> {
+    fn statement_node(&self) {}
 }

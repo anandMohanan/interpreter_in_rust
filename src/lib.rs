@@ -1,6 +1,6 @@
+pub mod ast;
 pub mod lexer;
 pub mod repl;
-pub mod ast;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
@@ -8,8 +8,9 @@ pub fn add(left: usize, right: usize) -> usize {
 
 #[cfg(test)]
 mod test {
+    use crate::ast::ast::Program;
+    use crate::ast::parser::Parser;
     use crate::lexer::{lexer::Lexer, token::Token};
-
     #[test]
     fn test_lexer() {
         let input = "==+;";
@@ -35,5 +36,19 @@ mod test {
             10 != 9;";
         let lexer = Lexer::new(input);
         println!("{:#?}", lexer.into_iter().collect::<Vec<Token>>());
+    }
+
+    #[test]
+    fn test_let_statement() {
+        let input = "let x = 5;
+let y = 10;
+let foobar = 838383";
+
+        let lexer = Lexer::new(input);
+        let parser = Parser::new(lexer);
+
+        let program = parser.parse_program();
+       println!("{}",program.unwrap().statements.len()); 
+    
     }
 }
